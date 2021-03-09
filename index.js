@@ -19,7 +19,7 @@ export default class YellowEyed {
       temperature: Number(values[2])
     }
   }
-  sendCommand(parts) {
+  sendCommand(segments) {
     return new Promise((resolve, reject) => {
       let buffer = ''
       const socket = new Socket()
@@ -40,7 +40,7 @@ export default class YellowEyed {
       // 都度接続確立する
       socket.connect(PORT, this.host, () => {
         socket.write('*')
-        parts.forEach(part => { socket.write(part) })
+        segments.forEach(segment => { socket.write(segment) })
         socket.write('\r\n')
       })
     })
