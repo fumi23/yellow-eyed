@@ -1,7 +1,7 @@
 import { Socket } from 'net'
 
 const PORT = 51013
-const DOCUMENT_PATH = 'http://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
+const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
 export default class YellowEyed {
   constructor(host) {
@@ -19,7 +19,7 @@ export default class YellowEyed {
       temperature: Number(values[2])
     }
   }
-  sendCommand(parts) {
+  sendCommand(segments) {
     return new Promise((resolve, reject) => {
       let buffer = ''
       const socket = new Socket()
@@ -29,18 +29,18 @@ export default class YellowEyed {
         const pos = buffer.indexOf('\r\n')
         if (pos === -1) return
 
-        const response = buffer.substring(0, pos)
-        resolve(response)
-
         // 後続データがあってもバッファフラッシュ＆ソケットクローズ
+        const response = buffer.substring(0, pos)
         buffer = ''
         socket.end()
+
+        resolve(response)
       })
       socket.on('error', reject)
       // 都度接続確立する
       socket.connect(PORT, this.host, () => {
         socket.write('*')
-        parts.forEach(part => { socket.write(part) })
+        segments.forEach(segment => { socket.write(segment) })
         socket.write('\r\n')
       })
     })
