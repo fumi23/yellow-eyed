@@ -1,7 +1,7 @@
 import { Socket } from 'net'
 
 const PORT = 51013
-const DOCUMENT_PATH = 'http://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
+const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
 export default class YellowEyed {
   constructor(host) {
