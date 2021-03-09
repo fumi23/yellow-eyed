@@ -29,12 +29,12 @@ export default class YellowEyed {
         const pos = buffer.indexOf('\r\n')
         if (pos === -1) return
 
-        const response = buffer.substring(0, pos)
-        resolve(response)
-
         // 後続データがあってもバッファフラッシュ＆ソケットクローズ
+        const response = buffer.substring(0, pos)
         buffer = ''
         socket.end()
+
+        resolve(response)
       })
       socket.on('error', reject)
       // 都度接続確立する
