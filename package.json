@@ -1,6 +1,6 @@
 {
   "name": "yellow-eyed",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "iRemocon Wi-Fi (IRM-03WLA) コマンド送信ライブラリ",
   "main": "index.js",
   "scripts": {
