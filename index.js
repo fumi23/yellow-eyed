@@ -1,9 +1,9 @@
-import { Socket } from 'net'
+const { Socket } = require('net')
 
 const PORT = 51013
 const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
-export default class YellowEyed {
+module.exports = class YellowEyed {
   constructor(host) {
     this.host = host
   }
