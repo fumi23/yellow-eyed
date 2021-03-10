@@ -1,7 +1,7 @@
 # yellow-eyed
 iRemocon Wi-Fi (IRM-03WLA) コマンド送信ライブラリ
 
-[公開されているコマンド仕様](http://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf)に従い
+[公開されているコマンド仕様](https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf)に従い
 TCP/IP データ通信を行う Promise ベースのライブラリです
 - 公式パッケージではありません
 - Raw socket を扱うためブラウザでは動作しません
