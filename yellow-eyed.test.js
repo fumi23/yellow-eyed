@@ -19,7 +19,7 @@ const YellowEyed = require('yellow-eyed')
 
 const client = new YellowEyed('127.0.0.1')
 
-test('reeceive ok response', async () => {
+test('receive ok response', async () => {
   const server = createMockServer('se;ok;74.00;41.08;17.17')
 
   const promise = client.getAllSensorValue()
@@ -31,7 +31,7 @@ test('reeceive ok response', async () => {
   server.close()
 })
 
-test('reeceive error response', async () => {
+test('receive error response', async () => {
   const server = createMockServer('se;err;001')
 
   const promise = client.getAllSensorValue()
@@ -39,7 +39,7 @@ test('reeceive error response', async () => {
   server.close()
 })
 
-test('reeceive unknown response', async () => {
+test('receive unknown response', async () => {
   const server = createMockServer('se;yyy')
 
   const promise = client.getAllSensorValue()
@@ -47,7 +47,7 @@ test('reeceive unknown response', async () => {
   server.close()
 })
 
-test('reeceive mismatched response', async () => {
+test('receive mismatched response', async () => {
   const server = createMockServer('xx:ok')
 
   const promise = client.getAllSensorValue()
