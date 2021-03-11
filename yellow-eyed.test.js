@@ -8,19 +8,27 @@ function createMockServer(response) {
       const pos = buffer.indexOf('\r\n')
       if (pos === -1) return
 
-        buffer = ''
-        conn.write(response + '\r\n')
+      buffer = ''
+      conn.write(response + '\r\n')
     })
   }).listen(51013)
 }
 
+/*
+beforeEach(() => {
+  const server = createMockServer(message)
+})
+afterEach(() => {
+  server.close()
+})
+*/
 
 const YellowEyed = require('yellow-eyed')
 
 const client = new YellowEyed('127.0.0.1')
 
 test('receive ok response', async () => {
-  const server = createMockServer('se;ok;74.00;41.08;17.17')
+  jest.spyOn(client, 'sendCommand').mockReturnValue(Promise.resolve('se;ok;74.00;41.08;17.17'))
 
   const promise = client.getAllSensorValue()
   await expect(promise).resolves.toEqual({
@@ -28,7 +36,6 @@ test('receive ok response', async () => {
     humidity: 41.08,
     temperature: 17.17
   })
-  server.close()
 })
 
 test('receive error response', async () => {
