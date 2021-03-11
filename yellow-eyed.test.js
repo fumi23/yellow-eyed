@@ -1,63 +1,41 @@
-const { createServer } = require('net')
-
-function createMockServer(response) {
-  return createServer(conn => {
-    let buffer = ''
-    conn.on('data', data => {
-      buffer += data.toString()
-      const pos = buffer.indexOf('\r\n')
-      if (pos === -1) return
-
-      buffer = ''
-      conn.write(response + '\r\n')
-    })
-  }).listen(51013)
-}
-
-/*
-beforeEach(() => {
-  const server = createMockServer(message)
-})
-afterEach(() => {
-  server.close()
-})
-*/
-
 const YellowEyed = require('yellow-eyed')
 
 const client = new YellowEyed('127.0.0.1')
 
-test('receive ok response', async () => {
-  jest.spyOn(client, 'sendCommand').mockReturnValue(Promise.resolve('se;ok;74.00;41.08;17.17'))
+function mockResponse(message) {
+  jest
+    .spyOn(client, 'sendCommand')
+    .mockReturnValue(Promise.resolve(message))
+}
 
-  const promise = client.getAllSensorValue()
-  await expect(promise).resolves.toEqual({
-    illuminance: 74,
-    humidity: 41.08,
-    temperature: 17.17
+describe('getAllSensorValue', () => {
+  const subject = () => client.getAllSensorValue()
+
+  test('receive ok response', async () => {
+    mockResponse('se;ok;74.00;41.08;17.17')
+
+    await expect(subject()).resolves.toEqual({
+      illuminance: 74,
+      humidity: 41.08,
+      temperature: 17.17
+    })
   })
-})
 
-test('receive error response', async () => {
-  const server = createMockServer('se;err;001')
+  test('receive error response', async () => {
+    mockResponse('se;err;001')
 
-  const promise = client.getAllSensorValue()
-  await expect(promise).rejects.toThrow('Error Code: 001')
-  server.close()
-})
+    await expect(subject()).rejects.toThrow('Error Code: 001')
+  })
 
-test('receive unknown response', async () => {
-  const server = createMockServer('se;yyy')
+  test('receive unknown response', async () => {
+    mockResponse('se;yyy')
 
-  const promise = client.getAllSensorValue()
-  await expect(promise).rejects.toThrow('Unknown result')
-  server.close()
-})
+    await expect(subject()).rejects.toThrow('Unknown result')
+  })
 
-test('receive mismatched response', async () => {
-  const server = createMockServer('xx:ok')
+  test('receive mismatched response', async () => {
+    mockResponse('xx:ok')
 
-  const promise = client.getAllSensorValue()
-  await expect(promise).rejects.toThrow('Command mismatched')
-  server.close()
+    await expect(subject()).rejects.toThrow('Command mismatched')
+  })
 })
