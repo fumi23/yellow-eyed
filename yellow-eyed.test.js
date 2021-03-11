@@ -8,7 +8,7 @@ createServer(conn => {
     if (pos === -1) return
 
     buffer = ''
-    conn.write(response())
+    conn.write(response() + '\r\n')
   })
 }).listen(51013)
 
@@ -17,34 +17,34 @@ const YellowEyed = require('yellow-eyed')
 
 const client = new YellowEyed('127.0.0.1')
 
-test('reeceive ok response', () => {
+test('reeceive ok response', async () => {
   response.mockReturnValueOnce('se;ok;74.00;41.08;17.17')
 
   const promise = client.getAllSensorValue()
-  return expect(promise).resolves.toEqual({
+  await expect(promise).resolves.toEqual({
     illuminance: 74,
     humidity: 41.08,
     temperature: 17.17
   })
 })
 
-test('reeceive error response', () => {
+test('reeceive error response', async () => {
   response.mockReturnValueOnce('se;err;001')
 
   const promise = client.getAllSensorValue()
-  return expect(promise).rejects.toContain('Error Code: 001')
+  await expect(promise).rejects.toThrow('Error Code: 001')
 })
 
-test('reeceive unknown response', () => {
+test('reeceive unknown response', async () => {
   response.mockReturnValueOnce('se;yyy')
 
   const promise = client.getAllSensorValue()
-  return expect(promise).rejects.toContain('Unknown result')
+  await expect(promise).rejects.toThrow('Unknown result')
 })
 
-test('reeceive mismatched response', () => {
+test('reeceive mismatched response', async () => {
   response.mockReturnValueOnce('xx:ok')
 
   const promise = client.getAllSensorValue()
-  return expect(promise).rejects.toContain('Command mismatched')
+  await expect(promise).rejects.toThrow('Command mismatched')
 })
