@@ -1,4 +1,4 @@
-import YellowEyed from './index'
+import YellowEyed from '../index'
 
 const client = new YellowEyed('127.0.0.1')
 

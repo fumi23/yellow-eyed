@@ -4,7 +4,8 @@
   "description": "iRemocon Wi-Fi (IRM-03WLA) コマンド送信ライブラリ",
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "!**/__tests__"
   ],
   "scripts": {
     "build": "tsc",
