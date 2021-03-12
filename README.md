@@ -15,7 +15,7 @@ npm install yellow-eyed
 ## Usage
 ### Node
 ```js
-const YellowEyed = require('yellow-eyed');
+const YellowEyed = require('yellow-eyed').default;
 
 const client = new YellowEyed('192.168.230.13');
 client.getAllSensorValue().then(response => {
