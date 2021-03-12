@@ -1,10 +1,10 @@
-const YellowEyed = require('yellow-eyed')
+import YellowEyed from './index'
 
 const client = new YellowEyed('127.0.0.1')
 
-function mockResponse(message) {
+function mockResponse(message: string) {
   jest
-    .spyOn(client, 'sendCommand')
+    .spyOn<any, string>(client, 'sendCommand')
     .mockReturnValue(Promise.resolve(message))
 }
 
