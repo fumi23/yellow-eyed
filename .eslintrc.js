@@ -6,10 +6,13 @@ module.exports = {
   },
   'extends': [
     'eslint:recommended',
-    'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
   ],
   'parser': '@typescript-eslint/parser',
   'parserOptions': {
+    'project': 'tsconfig.json',
     'ecmaVersion': 12,
     'sourceType': 'module'
   },
@@ -17,6 +20,7 @@ module.exports = {
     '@typescript-eslint'
   ],
   'rules': {
+    '@typescript-eslint/no-explicit-any': 0,
     'indent': [
       'error',
       2

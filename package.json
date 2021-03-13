@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "lint": "eslint . --ext ts --ignore-pattern 'dist/*'",
     "test": "jest"
   },
   "repository": {
