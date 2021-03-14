@@ -6,7 +6,7 @@ const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v
 type IlluminanceValue = { illuminance: number }
 type HumidityValue = { humidity: number }
 type TemperatureValue = { temperature: number }
-type AllSensorValue = IlluminanceValue | HumidityValue | TemperatureValue
+type AllSensorValue = IlluminanceValue & HumidityValue & TemperatureValue
 
 export default class YellowEyed {
   private readonly host: string
