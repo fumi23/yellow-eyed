@@ -4,7 +4,7 @@ const client = new YellowEyed('127.0.0.1')
 
 function mockResponse(message: string) {
   jest
-    .spyOn<any, string>(client, 'sendCommand')
+    .spyOn(client as any, 'sendCommand')
     .mockReturnValue(Promise.resolve(message))
 }
 
