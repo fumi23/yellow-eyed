@@ -49,7 +49,9 @@ export default class YellowEyed {
       // 都度接続確立する
       socket.connect(PORT, this.host, () => {
         socket.write('*')
-        segments.forEach(segment => { socket.write(segment) })
+        segments.forEach(segment => {
+          socket.write(segment)
+        })
         socket.write('\r\n')
       })
     })
@@ -61,12 +63,12 @@ export default class YellowEyed {
       throw new Error(`Command mismatched: ${response}`)
     }
     switch (result) {
-    case 'ok':
-      return values
-    case 'err':
-      throw new Error(`Error Code: ${values[0]}; See ${DOCUMENT_PATH}`)
-    default:
-      throw new Error(`Unknown result: ${response}`)
+      case 'ok':
+        return values
+      case 'err':
+        throw new Error(`Error Code: ${values[0]}; See ${DOCUMENT_PATH}`)
+      default:
+        throw new Error(`Unknown result: ${response}`)
     }
   }
 }

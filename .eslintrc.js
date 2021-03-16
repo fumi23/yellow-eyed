@@ -1,41 +1,44 @@
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
-  'root': true,
-  'env': {
-    'browser': true,
-    'es2021': true
-  },
-  'extends': [
+  root: true,
+  extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+    'plugin:prettier/recommended'
   ],
-  'parser': '@typescript-eslint/parser',
-  'parserOptions': {
-    'project': 'tsconfig.json',
-    'ecmaVersion': 12,
-    'sourceType': 'module'
+  plugins: ['simple-import-sort'],
+  env: {
+    es6: true,
+    node: true,
+    jest: true
   },
-  'plugins': [
-    '@typescript-eslint'
-  ],
-  'rules': {
-    '@typescript-eslint/no-explicit-any': 0,
-    'indent': [
-      'error',
-      2
-    ],
-    'linebreak-style': [
-      'error',
-      'unix'
-    ],
-    'quotes': [
-      'error',
-      'single'
-    ],
-    'semi': [
-      'error',
-      'never'
-    ]
-  }
+  rules: {
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/no-use-before-define': 'off',
+    'import/default': 'off',
+    'import/order': 'off',
+    'no-console': 'off',
+    'no-empty': ['error', { allowEmptyCatch: true }],
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
+    'sort-imports': 'off'
+  },
+  overrides: [
+    {
+      files: '*.js',
+      rules: {
+        'import/order': ['error', { 'newlines-between': 'always' }],
+        'simple-import-sort/sort': 'off'
+      }
+    },
+    {
+      files: ['*.{config,d,test}.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off'
+      }
+    }
+  ]
 }
