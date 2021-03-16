@@ -8,6 +8,7 @@
     "!**/__tests__"
   ],
   "scripts": {
+    "prebuild": "rimraf dist",
     "build": "tsc",
     "lint": "eslint . --ext ts --ignore-pattern 'dist/*'",
     "test": "jest"
