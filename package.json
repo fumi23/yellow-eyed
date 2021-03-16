@@ -10,8 +10,15 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "tsc",
-    "lint": "eslint . --ext ts --ignore-pattern 'dist/*'",
-    "test": "jest"
+    "fix": "run-p fix:*",
+    "fix:eslint": "npm run lint:eslint -- --fix",
+    "fix:prettier": "npm run lint:prettier -- --write",
+    "lint": "run-p lint:*",
+    "lint:eslint": "eslint --ext js,ts .",
+    "lint:prettier": "prettier -l \"**/*.{json,md,yml}\"",
+    "lint:type": "tsc --noEmit",
+    "test": "run-s lint test:*",
+    "test:unit": "jest"
   },
   "repository": {
     "type": "git",
@@ -38,6 +45,7 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "jest": "^26.6.3",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.3",
