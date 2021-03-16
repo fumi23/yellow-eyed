@@ -3,6 +3,11 @@ import { Socket } from 'net'
 const PORT = 51013
 const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
+type IlluminanceValue = { illuminance: number }
+type HumidityValue = { humidity: number }
+type TemperatureValue = { temperature: number }
+type AllSensorValue = IlluminanceValue & HumidityValue & TemperatureValue
+
 export default class YellowEyed {
   private readonly host: string
 
@@ -12,7 +17,7 @@ export default class YellowEyed {
 
   // se -> se;ok;74.00;55.62;16.81
   // se -> se;err;010
-  public async getAllSensorValue() {
+  public async getAllSensorValue(): Promise<AllSensorValue> {
     const command = 'se'
     const response = await this.sendCommand([command])
     const values = this.parseResponse(response, command)
@@ -44,7 +49,9 @@ export default class YellowEyed {
       // 都度接続確立する
       socket.connect(PORT, this.host, () => {
         socket.write('*')
-        segments.forEach(segment => { socket.write(segment) })
+        segments.forEach(segment => {
+          socket.write(segment)
+        })
         socket.write('\r\n')
       })
     })
