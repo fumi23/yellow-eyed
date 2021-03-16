@@ -14,6 +14,7 @@
     "build": "run-p build:*",
     "build:common": "tsc",
     "build:esm": "tsc -p tsconfig.esm.json",
+    "postbuild": "npm pack --dry-run",
     "fix": "run-p fix:*",
     "fix:eslint": "npm run lint:eslint -- --fix",
     "fix:prettier": "npm run lint:prettier -- --write",
