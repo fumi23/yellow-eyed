@@ -5,11 +5,15 @@
   "main": "dist/index.js",
   "files": [
     "dist",
-    "!**/__tests__"
+    "src"
   ],
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc",
+    "build": "run-p build:*",
+    "build:common": "tsc",
+    "build:esm": "tsc -p tsconfig.esm.json",
     "fix": "run-p fix:*",
     "fix:eslint": "npm run lint:eslint -- --fix",
     "fix:prettier": "npm run lint:prettier -- --write",
