@@ -1,11 +1,9 @@
-import YellowEyed from '../index'
+import YellowEyed from './index'
 
 const client = new YellowEyed('127.0.0.1')
 
 function mockResponse(message: string) {
-  jest
-    .spyOn(client as any, 'sendCommand')
-    .mockReturnValue(Promise.resolve(message))
+  jest.spyOn(client as any, 'sendCommand').mockReturnValue(Promise.resolve(message))
 }
 
 describe('getAllSensorValue', () => {
