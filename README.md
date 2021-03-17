@@ -6,7 +6,7 @@ iRemocon Wi-Fi (IRM-03WLA) コマンド送信ライブラリ
 TCP/IP データ通信を行う Promise ベースのライブラリです
 
 - 公式パッケージではありません
-- Raw socket を扱うためブラウザでは動作しません
+- [net.Socket](https://nodejs.org/api/net.html#net_class_net_socket) を扱うためブラウザでは動作しません
 - Electron で利用する場合は `nodeIntegration: true` の設定が必要です
 
 ## Installation
