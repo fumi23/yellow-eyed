@@ -15,8 +15,33 @@ export default class YellowEyed {
     this.host = host
   }
 
-  // se -> se;ok;74.00;55.62;16.81
-  // se -> se;err;010
+  public async getIlluminanceValue(): Promise<IlluminanceValue> {
+    const command = 'li'
+    const response = await this.sendCommand([command])
+    const values = this.parseResponse(response, command)
+    return {
+      illuminance: Number(values[0])
+    }
+  }
+
+  public async getHumidityValue(): Promise<HumidityValue> {
+    const command = 'hu'
+    const response = await this.sendCommand([command])
+    const values = this.parseResponse(response, command)
+    return {
+      humidity: Number(values[0])
+    }
+  }
+
+  public async getTemperatureValue(): Promise<TemperatureValue> {
+    const command = 'te'
+    const response = await this.sendCommand([command])
+    const values = this.parseResponse(response, command)
+    return {
+      temperature: Number(values[0])
+    }
+  }
+
   public async getAllSensorValue(): Promise<AllSensorValue> {
     const command = 'se'
     const response = await this.sendCommand([command])
