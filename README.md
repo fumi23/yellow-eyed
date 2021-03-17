@@ -17,16 +17,50 @@ npm install yellow-eyed
 
 ## Usage
 
-### Node
+### CommonJS
 
 ```js
 const YellowEyed = require("yellow-eyed").default;
+```
 
-const client = new YellowEyed("192.168.230.13");
-client.getAllSensorValue().then(response => {
-  console.log(response);
-  // { illuminance: 74, humidity: 41.08, temperature: 17.17 }
-});
+### ES Modules
+
+```js
+import YellowEyed from "yellow-eyed";
+```
+
+---
+
+```js
+(() => {
+  const client = new YellowEyed("192.168.230.13");
+  client.getAllSensorValue()
+  .then(response => {
+    console.log(response);
+    // { illuminance: 74, humidity: 41.08, temperature: 17.17 }
+  })
+  .catch(e => {
+    console.error(e.message);
+    // Error Code: 001; See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf
+  });
+})();
+```
+
+or
+
+```js
+(async () => {
+  const client = new YellowEyed("192.168.230.13");
+  try {
+    const response = await client.getAllSensorValue()
+    console.log(response);
+    // { illuminance: 74, humidity: 41.08, temperature: 17.17 }
+  }
+  catch (e) {
+    console.error(e.message);
+    // Error Code: 001; See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf
+  })
+})();
 ```
 
 ### CLI
