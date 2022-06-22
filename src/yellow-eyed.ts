@@ -1,8 +1,9 @@
+import { strict as assert } from 'assert'
 import YellowEyedRaw, { Callback } from './yellow-eyed-raw'
 
 const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
-type Command = 'vr' | 'li' | 'hu' | 'te' | 'se'
+type Command = 'au' | 'vr' | 'li' | 'hu' | 'te' | 'se'
 type Version = { version: string }
 type Illuminance = { illuminance: number }
 type Humidity = { humidity: number }
@@ -62,6 +63,11 @@ export default class YellowEyed {
         }
       })
     })
+  }
+
+  async healthCheck(): Promise<void> {
+    const response = await this.sendCommandNaive('au')
+    assert.equal(response, 'ok')
   }
 
   async version(): Promise<Version> {
