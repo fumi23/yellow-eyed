@@ -43,6 +43,9 @@ import YellowEyed from "yellow-eyed";
     .catch(e => {
       console.error(e.message);
       // Error Code: 001; See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf
+    })
+    .finally(() => {
+      client.close();
     });
 })();
 ```
@@ -59,6 +62,8 @@ or
   } catch (e) {
     console.error(e.message);
     // Error Code: 001; See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf
+  } finally () {
+    client.close();
   }
 })();
 ```
