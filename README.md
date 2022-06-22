@@ -35,7 +35,7 @@ import YellowEyed from "yellow-eyed";
 (() => {
   const client = new YellowEyed("192.168.230.13");
   client
-    .getAllSensorValue()
+    .allSensors()
     .then(response => {
       console.log(response);
       // { illuminance: 74, humidity: 41.08, temperature: 17.17 }
@@ -56,7 +56,7 @@ or
 (async () => {
   const client = new YellowEyed("192.168.230.13");
   try {
-    const response = await client.getAllSensorValue();
+    const response = await client.allSensors();
     console.log(response);
     // { illuminance: 74, humidity: 41.08, temperature: 17.17 }
   } catch (e) {
