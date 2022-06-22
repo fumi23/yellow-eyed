@@ -2,7 +2,8 @@ import YellowEyedRaw, { Callback } from './yellow-eyed-raw'
 
 const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
-type Command = 'li' | 'hu' | 'te' | 'se'
+type Command = 'vr' | 'li' | 'hu' | 'te' | 'se'
+type Version = { version: string }
 type Illuminance = { illuminance: number }
 type Humidity = { humidity: number }
 type Temperature = { temperature: number }
@@ -31,7 +32,7 @@ export default class YellowEyed {
     this.client.send(command)
   }
 
-  private sendCommandNaive(cmd: Command) {
+  private sendCommandNaive(cmd: Command): Promise<string> {
     const command = cmd
 
     return new Promise(resolve => {
@@ -61,6 +62,11 @@ export default class YellowEyed {
         }
       })
     })
+  }
+
+  async version(): Promise<Version> {
+    const response = await this.sendCommandNaive('vr')
+    return { version: response }
   }
 
   async illuminance(): Promise<Illuminance> {
