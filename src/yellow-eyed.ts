@@ -1,10 +1,22 @@
 import { strict as assert } from 'assert'
 
+import Time from './time'
 import YellowEyedRaw, { Callback } from './yellow-eyed-raw'
 
 const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
-type Command = 'au' | 'vr' | 'li' | 'hu' | 'te' | 'se' | 'is' | 'ic' | 'cc'
+type Command =
+  | 'au'
+  | 'vr'
+  | 'li'
+  | 'hu'
+  | 'te'
+  | 'se'
+  | 'is'
+  | 'ic'
+  | 'cc'
+  | 'tg'
+  | 'ts'
 type Version = { version: string }
 type Illuminance = { illuminance: number }
 type Humidity = { humidity: number }
@@ -113,6 +125,17 @@ export default class YellowEyed {
 
   async cancelInputSignal(): Promise<void> {
     const values = await this.sendCommand('cc')
+    assert.equal(values.length, 0)
+  }
+
+  async clock(): Promise<Time> {
+    const values = await this.sendCommand('tg')
+    return { time: Time.parse(values[0]) }
+  }
+
+  async setClock({ time }: Time): Promise<void> {
+    const timestamp = Time.stringify(time)
+    const values = await this.sendCommand('ts', timestamp)
     assert.equal(values.length, 0)
   }
 }
