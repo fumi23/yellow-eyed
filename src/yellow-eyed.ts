@@ -10,6 +10,7 @@ type Illuminance = { illuminance: number }
 type Humidity = { humidity: number }
 type Temperature = { temperature: number }
 type AllSensors = Illuminance & Humidity & Temperature
+type Signal = { signalId: string }
 
 export default class YellowEyed {
   private client: YellowEyedRaw
@@ -100,12 +101,12 @@ export default class YellowEyed {
     }
   }
 
-  async emitSignal(signalId: string): Promise<void> {
+  async emitSignal({ signalId }: Signal): Promise<void> {
     const values = await this.sendCommand('is', signalId)
     assert.equal(values.length, 0)
   }
 
-  async inputSignal(signalId: string): Promise<void> {
+  async inputSignal({ signalId }: Signal): Promise<void> {
     const values = await this.sendCommand('ic', signalId)
     assert.equal(values.length, 0)
   }
