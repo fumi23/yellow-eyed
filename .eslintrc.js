@@ -18,10 +18,12 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'import/default': 'off',
     'import/order': 'off',
     'no-console': 'off',
     'no-empty': ['error', { allowEmptyCatch: true }],
+    'no-unused-vars': 'off',
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
     'sort-imports': 'off'
