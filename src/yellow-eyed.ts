@@ -2,6 +2,7 @@ import YellowEyedRaw, { Callback } from './yellow-eyed-raw'
 
 const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
+type Command = 'li' | 'hu' | 'te' | 'se'
 type Illuminance = { illuminance: number }
 type Humidity = { humidity: number }
 type Temperature = { temperature: number }
@@ -30,13 +31,15 @@ export default class YellowEyed {
     this.client.send(command)
   }
 
-  private sendCommandNaive(command: string) {
+  private sendCommandNaive(cmd: Command) {
+    const command = cmd
+
     return new Promise(resolve => {
       this.registerCallback(command, resolve)
     })
   }
 
-  private sendCommand(cmd: string, ...params: unknown[]): Promise<string[]> {
+  private sendCommand(cmd: Command, ...params: unknown[]): Promise<string[]> {
     const command = [cmd, ...params].join(';')
 
     return new Promise((resolve, reject) => {
@@ -60,22 +63,22 @@ export default class YellowEyed {
     })
   }
 
-  async getIlluminanceValue(): Promise<Illuminance> {
+  async illuminance(): Promise<Illuminance> {
     const values = await this.sendCommand('li')
     return { illuminance: Number(values[0]) }
   }
 
-  async getHumidityValue(): Promise<Humidity> {
+  async humidity(): Promise<Humidity> {
     const values = await this.sendCommand('hu')
     return { humidity: Number(values[0]) }
   }
 
-  async getTemperatureValue(): Promise<Temperature> {
+  async temperature(): Promise<Temperature> {
     const values = await this.sendCommand('te')
     return { temperature: Number(values[0]) }
   }
 
-  async getAllSensorValue(): Promise<AllSensors> {
+  async allSensors(): Promise<AllSensors> {
     const values = await this.sendCommand('se')
     return {
       illuminance: Number(values[0]),
