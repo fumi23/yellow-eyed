@@ -1,6 +1,8 @@
 import { strict as assert } from 'assert'
 
+import Schedule from './schedule'
 import Time from './time'
+import { chop } from './util/array'
 import YellowEyedRaw, { Callback } from './yellow-eyed-raw'
 
 const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
@@ -17,12 +19,18 @@ type Command =
   | 'cc'
   | 'tg'
   | 'ts'
+  | 'tm'
+  | 'tl'
+  | 'td'
 type Version = { version: string }
 type Illuminance = { illuminance: number }
 type Humidity = { humidity: number }
 type Temperature = { temperature: number }
 type AllSensors = Illuminance & Humidity & Temperature
 type Signal = { signalId: string }
+type Timer = Signal & Time & Schedule
+type TimerId = { timerId: string }
+type TimerEntry = TimerId & Timer
 
 export default class YellowEyed {
   private client: YellowEyedRaw
@@ -136,6 +144,30 @@ export default class YellowEyed {
   async setClock({ time }: Time): Promise<void> {
     const timestamp = Time.stringify(time)
     const values = await this.sendCommand('ts', timestamp)
+    assert.equal(values.length, 0)
+  }
+
+  async inputTimer({ signalId, time, schedule = 0 }: Timer): Promise<void> {
+    const timestamp = Time.stringify(time)
+    const code = Schedule.stringify(schedule)
+    const values = await this.sendCommand('tm', signalId, timestamp, code)
+    assert.equal(values.length, 0)
+  }
+
+  async listTimers(): Promise<TimerEntry[]> {
+    const [length, ...flattedValues] = await this.sendCommand('tl')
+    const timers = chop(flattedValues, 4).map(values => ({
+      timerId: values[0],
+      signalId: values[1],
+      time: Time.parse(values[2]),
+      schedule: Schedule.parse(values[3])
+    }))
+    assert.equal(timers.length, Number(length))
+    return timers
+  }
+
+  async deleteTimer({ timerId }: TimerId): Promise<void> {
+    const values = await this.sendCommand('td', timerId)
     assert.equal(values.length, 0)
   }
 }
