@@ -11,7 +11,11 @@ type Result<T> = OkResult<T> | ErrorResult
 
 const Result = {
   map<T, U>(res: Result<T>, callback: (_: T) => U): Result<U> {
-    return res.result === 'ok' ? { result: 'ok', value: callback(res.value) } : res
+    if (res.result === 'ok') {
+      return { result: 'ok', value: callback(res.value) }
+    } else {
+      return res
+    }
   }
 }
 
