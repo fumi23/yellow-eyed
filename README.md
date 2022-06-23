@@ -34,19 +34,22 @@ import YellowEyed from "yellow-eyed";
 ```js
 (() => {
   const client = new YellowEyed("192.168.230.13");
-  client
-    .allSensors()
-    .then(response => {
-      console.log(response);
-      // { illuminance: 74, humidity: 41.08, temperature: 17.17 }
-    })
-    .catch(e => {
-      console.error(e.message);
-      // Error Code: 001; See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf
-    })
-    .finally(() => {
-      client.close();
-    });
+  client.allSensors().then(response => {
+    console.log(response);
+    /*
+      {
+        result: 'ok',
+        value: { illuminance: 74, humidity: 41.08, temperature: 17.17 }
+      }
+      or
+      {
+        result: 'error',
+        code: '001',
+        description: 'See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
+      }
+    */
+    client.close();
+  });
 })();
 ```
 
@@ -55,16 +58,21 @@ or
 ```js
 (async () => {
   const client = new YellowEyed("192.168.230.13");
-  try {
-    const response = await client.allSensors();
-    console.log(response);
-    // { illuminance: 74, humidity: 41.08, temperature: 17.17 }
-  } catch (e) {
-    console.error(e.message);
-    // Error Code: 001; See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf
-  } finally () {
-    client.close();
-  }
+  const response = await client.allSensors();
+  console.log(response);
+  /*
+    {
+      result: 'ok',
+      value: { illuminance: 74, humidity: 41.08, temperature: 17.17 }
+    }
+    or
+    {
+      result: 'error',
+      code: '001',
+      description: 'See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
+    }
+  */
+  client.close();
 })();
 ```
 
