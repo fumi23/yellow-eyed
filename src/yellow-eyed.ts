@@ -1,5 +1,6 @@
 import { strict as assert } from 'assert'
 
+import Result from './result'
 import Schedule from './schedule'
 import Time from './time'
 import { chop } from './util/array'
@@ -31,6 +32,7 @@ type Signal = { signalId: string }
 type Timer = Signal & Time & Schedule
 type TimerId = { timerId: string }
 type TimerEntry = TimerId & Timer
+type Response<T> = Promise<Result<T>>
 
 export default class YellowEyed {
   private client: YellowEyedRaw
@@ -55,15 +57,20 @@ export default class YellowEyed {
     this.client.send(command)
   }
 
-  private sendCommandNaive(cmd: Command): Promise<string> {
+  private sendCommandNaive(cmd: Command): Response<string> {
     const command = cmd
 
     return new Promise(resolve => {
-      this.registerCallback(command, resolve)
+      this.registerCallback(command, response => {
+        resolve({
+          result: 'ok',
+          value: response
+        })
+      })
     })
   }
 
-  private sendCommand(cmd: Command, ...params: unknown[]): Promise<string[]> {
+  private sendCommand(cmd: Command, ...params: unknown[]): Response<string[]> {
     const command = [cmd, ...params].join(';')
 
     return new Promise((resolve, reject) => {
@@ -74,10 +81,17 @@ export default class YellowEyed {
         }
         switch (result) {
           case 'ok':
-            resolve(values)
+            resolve({
+              result: 'ok',
+              value: values
+            })
             break
           case 'err':
-            reject(new Error(`Error Code: ${values[0]}; See ${DOCUMENT_PATH}`))
+            resolve({
+              result: 'error',
+              code: values[0],
+              description: `See ${DOCUMENT_PATH}`
+            })
             break
           default:
             reject(new Error(`Unknown result: ${response}`))
@@ -87,87 +101,91 @@ export default class YellowEyed {
     })
   }
 
-  async healthCheck(): Promise<void> {
-    const response = await this.sendCommandNaive('au')
-    assert.equal(response, 'ok')
+  async healthCheck(): Response<void> {
+    const result = await this.sendCommandNaive('au')
+    return Result.map(result, response => {
+      assert.equal(response, 'ok')
+    })
   }
 
-  async version(): Promise<Version> {
-    const response = await this.sendCommandNaive('vr')
-    return { version: response }
+  async version(): Response<Version> {
+    const result = await this.sendCommandNaive('vr')
+    return Result.map(result, response => ({ version: response }))
   }
 
-  async illuminance(): Promise<Illuminance> {
-    const values = await this.sendCommand('li')
-    return { illuminance: Number(values[0]) }
+  async illuminance(): Response<Illuminance> {
+    const result = await this.sendCommand('li')
+    return Result.map(result, values => ({ illuminance: Number(values[0]) }))
   }
 
-  async humidity(): Promise<Humidity> {
-    const values = await this.sendCommand('hu')
-    return { humidity: Number(values[0]) }
+  async humidity(): Response<Humidity> {
+    const result = await this.sendCommand('hu')
+    return Result.map(result, values => ({ humidity: Number(values[0]) }))
   }
 
-  async temperature(): Promise<Temperature> {
-    const values = await this.sendCommand('te')
-    return { temperature: Number(values[0]) }
+  async temperature(): Response<Temperature> {
+    const result = await this.sendCommand('te')
+    return Result.map(result, values => ({ temperature: Number(values[0]) }))
   }
 
-  async allSensors(): Promise<AllSensors> {
-    const values = await this.sendCommand('se')
-    return {
+  async allSensors(): Response<AllSensors> {
+    const result = await this.sendCommand('se')
+    return Result.map(result, values => ({
       illuminance: Number(values[0]),
       humidity: Number(values[1]),
       temperature: Number(values[2])
-    }
+    }))
   }
 
-  async emitSignal({ signalId }: Signal): Promise<void> {
-    const values = await this.sendCommand('is', signalId)
-    assert.equal(values.length, 0)
+  async emitSignal({ signalId }: Signal): Response<void> {
+    const result = await this.sendCommand('is', signalId)
+    return Result.map(result, _ => {})
   }
 
-  async inputSignal({ signalId }: Signal): Promise<void> {
-    const values = await this.sendCommand('ic', signalId)
-    assert.equal(values.length, 0)
+  async inputSignal({ signalId }: Signal): Response<void> {
+    const result = await this.sendCommand('ic', signalId)
+    return Result.map(result, _ => {})
   }
 
-  async cancelInputSignal(): Promise<void> {
-    const values = await this.sendCommand('cc')
-    assert.equal(values.length, 0)
+  async cancelInputSignal(): Response<void> {
+    const result = await this.sendCommand('cc')
+    return Result.map(result, _ => {})
   }
 
-  async clock(): Promise<Time> {
-    const values = await this.sendCommand('tg')
-    return { time: Time.parse(values[0]) }
+  async clock(): Response<Time> {
+    const result = await this.sendCommand('tg')
+    return Result.map(result, values => ({ time: Time.parse(values[0]) }))
   }
 
-  async setClock({ time }: Time): Promise<void> {
+  async setClock({ time }: Time): Response<void> {
     const timestamp = Time.stringify(time)
-    const values = await this.sendCommand('ts', timestamp)
-    assert.equal(values.length, 0)
+    const result = await this.sendCommand('ts', timestamp)
+    return Result.map(result, _ => {})
   }
 
-  async inputTimer({ signalId, time, schedule = 0 }: Timer): Promise<void> {
+  async inputTimer({ signalId, time, schedule = 0 }: Timer): Response<void> {
     const timestamp = Time.stringify(time)
     const code = Schedule.stringify(schedule)
-    const values = await this.sendCommand('tm', signalId, timestamp, code)
-    assert.equal(values.length, 0)
+    const result = await this.sendCommand('tm', signalId, timestamp, code)
+    return Result.map(result, _ => {})
   }
 
-  async listTimers(): Promise<TimerEntry[]> {
-    const [length, ...flattedValues] = await this.sendCommand('tl')
-    const timers = chop(flattedValues, 4).map(values => ({
-      timerId: values[0],
-      signalId: values[1],
-      time: Time.parse(values[2]),
-      schedule: Schedule.parse(values[3])
-    }))
-    assert.equal(timers.length, Number(length))
-    return timers
+  async listTimers(): Response<TimerEntry[]> {
+    const result = await this.sendCommand('tl')
+    return Result.map(result, ([length, ...flattedValues]) => {
+      const timers = chop(flattedValues, 4).map(values => ({
+        timerId: values[0],
+        signalId: values[1],
+        time: Time.parse(values[2]),
+        schedule: Schedule.parse(values[3])
+      }))
+      assert.equal(timers.length, Number(length))
+      return timers
+    })
   }
 
-  async deleteTimer({ timerId }: TimerId): Promise<void> {
-    const values = await this.sendCommand('td', timerId)
-    assert.equal(values.length, 0)
+  async deleteTimer({ timerId }: TimerId): Response<void> {
+    const result = await this.sendCommand('td', timerId)
+    return Result.map(result, _ => {})
   }
 }
