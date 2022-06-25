@@ -61,56 +61,46 @@ export default class YellowEyed {
     }
   }
 
-  private async registerCallback(command: string, callback: Callback) {
+  private async sendCommandRaw(command: string): Promise<string> {
     if (!this.hasPendingCommand) {
       await this.client.connect()
     }
-    this.callbackStack.push(callback)
-    this.client.send(command)
-  }
-
-  private sendCommandNaive(cmd: Command): Response<string> {
-    const command = cmd
-
     return new Promise(resolve => {
-      this.registerCallback(command, response => {
-        resolve({
-          result: 'ok',
-          value: response
-        })
-      })
+      this.callbackStack.push(resolve)
+      this.client.send(command)
     })
   }
 
-  private sendCommand(cmd: Command, ...params: unknown[]): Response<string[]> {
-    const command = [cmd, ...params].join(';')
+  private async sendCommandNaive(command: Command): Response<string> {
+    const response = await this.sendCommandRaw(command)
+    return {
+      result: 'ok',
+      value: response
+    }
+  }
 
-    return new Promise((resolve, reject) => {
-      this.registerCallback(command, response => {
-        const [tag, result, ...values] = response.split(';')
-        if (tag !== cmd) {
-          reject(new Error(`Command mismatched: ${response}`))
+  private async sendCommand(cmd: Command, ...params: unknown[]): Response<string[]> {
+    const command = [cmd, ...params].join(';')
+    const response = await this.sendCommandRaw(command)
+    const [tag, result, ...values] = response.split(';')
+    if (tag !== cmd) {
+      throw new Error(`Command mismatched: ${response}`)
+    }
+    switch (result) {
+      case 'ok':
+        return {
+          result: 'ok',
+          value: values
         }
-        switch (result) {
-          case 'ok':
-            resolve({
-              result: 'ok',
-              value: values
-            })
-            break
-          case 'err':
-            resolve({
-              result: 'error',
-              code: values[0],
-              description: `See ${DOCUMENT_PATH}`
-            })
-            break
-          default:
-            reject(new Error(`Unknown result: ${response}`))
-            break
+      case 'err':
+        return {
+          result: 'error',
+          code: values[0],
+          description: `See ${DOCUMENT_PATH}`
         }
-      })
-    })
+      default:
+        throw new Error(`Unknown result: ${response}`)
+    }
   }
 
   async healthCheck(): Response<void> {
