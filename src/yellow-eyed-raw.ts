@@ -32,7 +32,7 @@ export default class YellowEyedRaw {
   recv(): Promise<Buffer | void> {
     return new Promise((resolve, reject) => {
       this.onData = resolve // データを受信したとき
-      this.onEnd = resolve // eot を受信したとき (= passive close)
+      this.onEnd = resolve // EOT を受信したとき (= Passive Close)
       this.onError = reject // 通信中のエラーが発生したとき
     })
   }
