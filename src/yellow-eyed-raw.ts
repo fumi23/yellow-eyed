@@ -8,7 +8,6 @@ export default class YellowEyedRaw {
   private onConnect = () => {}
   private onError = (_error: Error) => {}
   private onData = (_data: Buffer) => {}
-  private onEnd = () => {}
   private onClose = (_hadError: boolean) => {}
 
   constructor(host: string) {
@@ -17,7 +16,6 @@ export default class YellowEyedRaw {
       .on('connect', () => this.onConnect())
       .on('error', (error: Error) => this.onError(error))
       .on('data', (data: Buffer) => this.onData(data))
-      .on('end', () => this.onEnd())
       .on('close', (hadError: boolean) => this.onClose(hadError))
   }
 
@@ -29,10 +27,9 @@ export default class YellowEyedRaw {
     })
   }
 
-  recv(): Promise<Buffer | void> {
+  recv(): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       this.onData = resolve // データを受信したとき
-      this.onEnd = resolve // EOT を受信したとき (= Passive Close)
       this.onError = reject // 通信中のエラーが発生したとき
     })
   }
@@ -41,9 +38,6 @@ export default class YellowEyedRaw {
     let buffer = ''
     for (;;) {
       const data = await this.recv()
-      if (data == null) {
-        break
-      }
       buffer += data.toString()
       for (;;) {
         // CRLF を受信するまでバッファリング

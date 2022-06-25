@@ -42,25 +42,29 @@ export default class YellowEyed {
 
   constructor(host: string) {
     this.client = new YellowEyedRaw(host)
-    this.client.connect()
     this.receiveLoop()
+  }
+
+  private get hasPendingCommand() {
+    return this.callbackStack.length > 0
   }
 
   private async receiveLoop() {
     const generator = this.client.waitReceive()
     for await (const response of generator) {
       const callback = this.callbackStack.pop()
-      if (callback) {
-        callback(response)
+      callback?.(response)
+
+      if (!this.hasPendingCommand) {
+        await this.client.close()
       }
     }
   }
 
-  close(): void {
-    this.client.close()
-  }
-
-  private registerCallback(command: string, callback: Callback) {
+  private async registerCallback(command: string, callback: Callback) {
+    if (!this.hasPendingCommand) {
+      await this.client.connect()
+    }
     this.callbackStack.push(callback)
     this.client.send(command)
   }
