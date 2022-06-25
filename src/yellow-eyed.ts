@@ -45,20 +45,24 @@ export default class YellowEyed {
     this.receiveLoop()
   }
 
+  private get hasPendingCommand() {
+    return this.callbackStack.length > 0
+  }
+
   private async receiveLoop() {
     const generator = this.client.waitReceive()
     for await (const response of generator) {
       const callback = this.callbackStack.pop()
       callback?.(response)
 
-      if (this.callbackStack.length === 0) {
+      if (!this.hasPendingCommand) {
         await this.client.close()
       }
     }
   }
 
   private async registerCallback(command: string, callback: Callback) {
-    if (this.callbackStack.length === 0) {
+    if (!this.hasPendingCommand) {
       await this.client.connect()
     }
     this.callbackStack.push(callback)
