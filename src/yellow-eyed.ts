@@ -4,7 +4,7 @@ import Result from './result'
 import Schedule from './schedule'
 import Time from './time'
 import { chop } from './util/array'
-import YellowEyedRaw, { Callback } from './yellow-eyed-raw'
+import YellowEyedRaw from './yellow-eyed-raw'
 
 const DOCUMENT_PATH = 'https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
 
@@ -32,6 +32,8 @@ type Signal = { signalId: string }
 type Timer = Signal & Time & Schedule
 type TimerId = { timerId: string }
 type TimerEntry = TimerId & Timer
+
+type Callback = (_response: string) => void
 type Response<T> = Promise<Result<T>>
 
 export default class YellowEyed {
@@ -40,12 +42,18 @@ export default class YellowEyed {
 
   constructor(host: string) {
     this.client = new YellowEyedRaw(host)
-    this.client.onRecv(response => {
+    this.client.connect()
+    this.receiveLoop()
+  }
+
+  private async receiveLoop() {
+    const generator = this.client.waitReceive()
+    for await (const response of generator) {
       const callback = this.callbackStack.pop()
       if (callback) {
         callback(response)
       }
-    })
+    }
   }
 
   close(): void {
