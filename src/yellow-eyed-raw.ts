@@ -29,19 +29,22 @@ export default class YellowEyedRaw {
     })
   }
 
+  recv(): Promise<Buffer | void> {
+    return new Promise((resolve, reject) => {
+      this.onData = resolve // データを受信したとき
+      this.onEnd = resolve // eot を受信したとき (= passive close)
+      this.onError = reject // 通信中のエラーが発生したとき
+    })
+  }
+
   async *waitReceive(): AsyncGenerator<string> {
     let buffer = ''
     for (;;) {
-      const data = await new Promise<Buffer | void>((resolve, reject) => {
-        this.onData = resolve // データを受信したとき
-        this.onEnd = resolve // EOT を受信したとき (= Passive Close)
-        this.onError = reject // 通信中のエラーが発生したとき
-      })
-      if (data) {
-        buffer += data.toString()
-      } else {
+      const data = await this.recv()
+      if (data == null) {
         break
       }
+      buffer += data.toString()
       for (;;) {
         // CRLF を受信するまでバッファリング
         const pos = buffer.indexOf('\r\n')
