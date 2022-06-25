@@ -48,7 +48,6 @@ import YellowEyed from "yellow-eyed";
         description: 'See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
       }
     */
-    client.close();
   });
 })();
 ```
@@ -72,7 +71,6 @@ or
       description: 'See https://i-remocon.com/hp/documents/IRM03WLA_command_ref_v1.pdf'
     }
   */
-  client.close();
 })();
 ```
 
